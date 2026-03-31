@@ -1,6 +1,6 @@
 {
   "name": "cfcontrail",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Trace what's wrong with your Cloudflare Workers and Pages",
   "type": "module",
   "bin": {

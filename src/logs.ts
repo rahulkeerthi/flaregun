@@ -417,6 +417,91 @@ async function fetchErrors(
   }
 }
 
+async function fetchLogErrors(
+  config: AuthConfig,
+  fromMs: number,
+  toMs: number,
+  filters: object[],
+): Promise<void> {
+  console.log(bold("Checking console errors and exceptions (logs dataset)..."));
+  console.log();
+
+  // Query the logs dataset for error-level log entries.
+  // The level key is "$workers.level" with value "ERROR".
+  const logFilters: object[] = [
+    ...filters,
+    {
+      key: "$workers.level",
+      operation: "eq",
+      value: "ERROR",
+      type: "string",
+    },
+  ];
+
+  const body = {
+    queryId: `log-errors-${Date.now()}`,
+    timeframe: { from: fromMs, to: toMs },
+    view: "events",
+    limit: 30,
+    parameters: {
+      datasets: ["logs"],
+      filters: logFilters,
+      filterCombination: "and",
+      calculations: [{ operator: "count", alias: "count" }],
+      orderBy: { value: "timestamp", order: "desc" },
+    },
+  };
+
+  let resp: TelemetryResponse;
+  try {
+    resp = (await cfLogsApi(
+      config,
+      "POST",
+      `/accounts/${config.accountId}/workers/observability/telemetry/query`,
+      body,
+    )) as TelemetryResponse;
+  } catch (e) {
+    console.log(yellow(`Could not fetch log errors: ${(e as Error).message}`));
+    return;
+  }
+
+  if (!resp.success) {
+    console.log(dim("Log errors query returned no results."));
+    return;
+  }
+
+  const { events } = resolveEvents(resp.result?.events);
+
+  if (events.length === 0) {
+    console.log(green("No console errors or exceptions found in logs."));
+    return;
+  }
+
+  console.log(`${red(bold(`Found ${events.length} log-level errors:`))}`);
+  console.log();
+
+  for (let i = 0; i < Math.min(events.length, 30); i++) {
+    const evt = events[i];
+
+    const ts = (() => {
+      const raw = evt.timestamp ?? evt.Timestamp ?? "";
+      if (typeof raw === "number") return epochMsToDatetime(raw);
+      return String(raw);
+    })();
+
+    const script = getEventScript(evt);
+    const message =
+      (evt["$workers.message"] as string | undefined) ??
+      getEventMessage(evt);
+    const exception = ((evt["exception.message"] ?? evt["error.message"] ?? "") as string);
+
+    console.log(`  ${red(ts)}  ${bold(script)}`);
+    if (message) console.log(`    ${red(String(message).slice(0, 300))}`);
+    if (exception) console.log(`    Exception: ${red(exception)}`);
+    console.log();
+  }
+}
+
 async function fetchPathBreakdown(
   config: AuthConfig,
   fromMs: number,
@@ -542,8 +627,9 @@ export async function doLogs(opts: LogsOptions): Promise<void> {
   console.log(`${green("Connected")} -- ${access.keyCount} keys available`);
   console.log();
 
-  // Fetch events, errors, path breakdown
+  // Fetch events, errors, log errors, path breakdown
   await fetchEvents(opts.config, fromMs, toMs, filters, opts.limit);
   await fetchErrors(opts.config, fromMs, toMs, filters);
+  await fetchLogErrors(opts.config, fromMs, toMs, filters);
   await fetchPathBreakdown(opts.config, fromMs, toMs, filters);
 }

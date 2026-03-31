@@ -45,7 +45,7 @@ export async function doList(opts: ListOptions): Promise<void> {
   const from = periodToFrom(period);
   const now = nowISO();
 
-  console.log(`${bold(cyan("Flaregun -- List Projects"))}`);
+  console.log(`${bold(cyan("Contrail -- List Projects"))}`);
   console.log(dim(`Showing workers/pages with activity in the last ${period}`));
   console.log();
 
@@ -111,6 +111,6 @@ export async function doList(opts: ListOptions): Promise<void> {
   }
 
   console.log();
-  console.log(dim("Use: flaregun scan --project <name> to scan a specific project"));
-  console.log(dim("     flaregun logs --project <name> for detailed logs"));
+  console.log(dim("Use: cfcontrail scan --project <name> to scan a specific project"));
+  console.log(dim("     cfcontrail logs --project <name> for detailed logs"));
 }

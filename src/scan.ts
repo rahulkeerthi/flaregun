@@ -301,7 +301,7 @@ async function summaryStep(
   const targets = new Set([...scriptsWith5xx, ...scriptsWithHighLatency]);
   if (targets.size > 0) {
     for (const t of [...targets].sort()) {
-      console.log(`  ${bold("Next step:")} flaregun logs --project ${t} --period ${period}`);
+      console.log(`  ${bold("Next step:")} cfcontrail logs --project ${t} --period ${period}`);
     }
   }
   console.log();
@@ -314,7 +314,7 @@ export async function doScan(opts: ScanOptions): Promise<void> {
   const now = nowISO();
   const filter = buildFilter(from, now, opts.filterName);
 
-  console.log(`${bold(cyan("Flaregun -- Scan"))}`);
+  console.log(`${bold(cyan("Contrail -- Scan"))}`);
   console.log(dim(`Period: ${opts.period} (${from} -> ${now})`));
   if (opts.filterName) {
     console.log(dim(`Filter: scriptName = ${opts.filterName}`));

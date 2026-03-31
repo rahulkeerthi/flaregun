@@ -1,10 +1,10 @@
 {
-  "name": "flaregun",
+  "name": "cfcontrail",
   "version": "0.1.0",
-  "description": "Fire a flare to find what's wrong with your Cloudflare Workers and Pages",
+  "description": "Trace what's wrong with your Cloudflare Workers and Pages",
   "type": "module",
   "bin": {
-    "flaregun": "./dist/index.js"
+    "cfcontrail": "./dist/index.js"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",

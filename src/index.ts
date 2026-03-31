@@ -13,10 +13,10 @@ import { red, bold } from "./format.js";
 // ── Help text ─────────────────────────────────────────────────────
 
 const HELP = `
-${bold("flaregun")} -- fire a flare to find what's wrong with your Cloudflare Workers
+${bold("cfcontrail")} -- trace what's wrong with your Cloudflare Workers
 
 ${bold("USAGE")}
-  flaregun [command] [flags]
+  cfcontrail [command] [flags]
 
 ${bold("COMMANDS")}
   scan                     Scan for anomalies (default if no command given)
@@ -47,12 +47,12 @@ ${bold("ENVIRONMENT")}
   Reads from .env file in the current directory automatically.
 
 ${bold("EXAMPLES")}
-  flaregun                                     # scan all workers, last 1h
-  flaregun scan --project myteam-www --period 6h
-  flaregun scan --errors --period 24h
-  flaregun logs --project myteam-www
-  flaregun logs --project myteam-www --since "2026-03-31T10:00:00Z"
-  flaregun list --period 30d
+  cfcontrail                                     # scan all workers, last 1h
+  cfcontrail scan --project myteam-www --period 6h
+  cfcontrail scan --errors --period 24h
+  cfcontrail logs --project myteam-www
+  cfcontrail logs --project myteam-www --since "2026-03-31T10:00:00Z"
+  cfcontrail list --period 30d
 `;
 
 // ── Arg parsing ───────────────────────────────────────────────────

@@ -512,7 +512,7 @@ export async function doLogs(opts: LogsOptions): Promise<void> {
   const toMs = isoToEpochMs(now);
   const filters = buildFilters(opts.filterName);
 
-  console.log(`${bold(cyan("Flaregun -- Logs"))}`);
+  console.log(`${bold(cyan("Contrail -- Logs"))}`);
   console.log(dim(`Window: ${fromIso} -> ${now}`));
   if (opts.filterName) {
     console.log(dim(`Filter: scriptName = ${opts.filterName}`));

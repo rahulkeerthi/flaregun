@@ -1,6 +1,6 @@
-# flaregun
+# cfcontrail
 
-Fire a flare to find what's wrong with your Cloudflare Workers and Pages.
+Trace what's wrong with your Cloudflare Workers and Pages.
 
 Three modes:
 
@@ -11,36 +11,36 @@ Three modes:
 ## Install
 
 ```bash
-npx flaregun
+npx cfcontrail
 ```
 
 Or install globally:
 
 ```bash
-npm install -g flaregun
-flaregun
+npm install -g cfcontrail
+cfcontrail
 ```
 
 ## Usage
 
 ```bash
 # List all projects with recent activity
-flaregun list
+cfcontrail list
 
 # Scan all workers for the last hour (default)
-flaregun scan
+cfcontrail scan
 
 # Scan a specific project over 6 hours
-flaregun scan --project myteam-www --period 6h
+cfcontrail scan --project myteam-www --period 6h
 
 # Focus on errors only
-flaregun scan --errors --period 24h
+cfcontrail scan --errors --period 24h
 
 # Pull detailed per-request logs
-flaregun logs --project footyapps
+cfcontrail logs --project footyapps
 
 # Logs from a specific time
-flaregun logs --project footyapps --since "2026-03-31T10:00:00Z"
+cfcontrail logs --project footyapps --since "2026-03-31T10:00:00Z"
 ```
 
 ## Environment variables
@@ -78,13 +78,13 @@ Workers must have observability enabled:
 enabled = true
 ```
 
-Flaregun checks for this automatically and offers to add it if missing.
+Contrail checks for this automatically and offers to add it if missing.
 
 ## Security
 
-**Use scoped API tokens, not Global API Keys.** A scoped token with `Account Analytics:Read` and `Workers Scripts:Read` is all flaregun needs. Global API Keys (`CLOUDFLARE_API_KEY`) grant full account access and should be a last resort.
+**Use scoped API tokens, not Global API Keys.** A scoped token with `Account Analytics:Read` and `Workers Scripts:Read` is all cfcontrail needs. Global API Keys (`CLOUDFLARE_API_KEY`) grant full account access and should be a last resort.
 
-**Don't commit `.env` files.** If you use flaregun in CI, pass credentials via environment variables rather than `.env` files in the repo.
+**Don't commit `.env` files.** If you use cfcontrail in CI, pass credentials via environment variables rather than `.env` files in the repo.
 
 **Output may contain sensitive data.** The `logs` mode prints request URLs, exception messages, and console output from your workers. These can contain query parameters, session tokens, or PII. Don't pipe output to shared logs or issue trackers without review.
 

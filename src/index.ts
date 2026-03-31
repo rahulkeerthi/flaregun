@@ -3,7 +3,7 @@
 // CLI entry point — arg parsing, dispatch
 
 import "dotenv/config";
-import { loadAuthFromEnv } from "./api.js";
+import { loadAuthFromEnv, validateName } from "./api.js";
 import { doScan } from "./scan.js";
 import { doLogs } from "./logs.js";
 import { doList } from "./list.js";
@@ -165,7 +165,12 @@ function parseArgs(argv: string[]): CliArgs | null {
           console.error(red("--limit requires a numeric value"));
           process.exit(1);
         }
-        args.limit = Number(val);
+        const n = Number(val);
+        if (n < 1 || n > 1000) {
+          console.error(red("--limit must be between 1 and 1000"));
+          process.exit(1);
+        }
+        args.limit = n;
         i++;
         break;
       }
@@ -202,7 +207,16 @@ async function main(): Promise<void> {
   }
 
   // Resolve filter: --script takes precedence, --project is fallback
-  const filterName = args.scriptName ?? args.project;
+  const rawFilter = args.scriptName ?? args.project;
+  let filterName: string | null = null;
+  if (rawFilter) {
+    try {
+      filterName = validateName(rawFilter, "--project/--script");
+    } catch (e) {
+      console.error(red((e as Error).message));
+      process.exit(1);
+    }
+  }
 
   switch (args.mode) {
     case "scan":

@@ -11,6 +11,17 @@ export interface AuthConfig {
   logsApiKey?: string;
 }
 
+/** Strict allowlist for values interpolated into GraphQL queries */
+const SAFE_NAME = /^[a-zA-Z0-9_\-\.]+$/;
+
+/** Validate a string is safe for GraphQL interpolation (alphanumeric, hyphens, underscores, dots) */
+export function validateName(value: string, label: string): string {
+  if (!SAFE_NAME.test(value)) {
+    throw new Error(`${label} contains invalid characters: "${value}". Only alphanumeric, hyphens, underscores, and dots are allowed.`);
+  }
+  return value;
+}
+
 const GQL_ENDPOINT = "https://api.cloudflare.com/client/v4/graphql";
 const REST_BASE = "https://api.cloudflare.com/client/v4";
 
@@ -72,8 +83,7 @@ export async function cfApi(
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`REST API error: ${res.status} ${res.statusText}\n${text}`);
+    throw new Error(`REST API error: ${res.status} ${res.statusText} (${method} ${path})`);
   }
 
   return res.json();
@@ -99,8 +109,7 @@ export async function cfLogsApi(
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Logs API error: ${res.status} ${res.statusText}\n${text}`);
+    throw new Error(`Logs API error: ${res.status} ${res.statusText} (${method} ${path})`);
   }
 
   return res.json();
@@ -123,6 +132,8 @@ export function loadAuthFromEnv(): AuthConfig {
       "Set CLOUDFLARE_API_TOKEN or both CLOUDFLARE_EMAIL + CLOUDFLARE_API_KEY in .env",
     );
   }
+
+  validateName(accountId, "CLOUDFLARE_ACCOUNT_ID");
 
   return { accountId, apiToken, email, apiKey, logsApiKey };
 }

@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { loadAuthFromEnv } from "./api.js";
+import { loadAuthFromEnv, validateName } from "./api.js";
 
 // Save and restore env between tests
 let savedEnv: Record<string, string | undefined>;
@@ -93,5 +93,43 @@ describe("loadAuthFromEnv", () => {
 
     const config = loadAuthFromEnv();
     assert.strictEqual(config.logsApiKey, undefined);
+  });
+
+  it("rejects account ID with injection characters", () => {
+    process.env.CLOUDFLARE_ACCOUNT_ID = 'abc", evil: "true';
+    process.env.CLOUDFLARE_API_TOKEN = "my-token";
+    assert.throws(() => loadAuthFromEnv(), /invalid characters/);
+  });
+});
+
+describe("validateName", () => {
+  it("accepts valid project names", () => {
+    for (const name of ["myteam-www", "footyapps", "reep_api", "worker.prod", "abc123"]) {
+      assert.strictEqual(validateName(name, "test"), name);
+    }
+  });
+
+  it("rejects names with double quotes (GraphQL injection)", () => {
+    assert.throws(() => validateName('foo", evil: "bar', "test"), /invalid characters/);
+  });
+
+  it("rejects names with backslashes", () => {
+    assert.throws(() => validateName("foo\\bar", "test"), /invalid characters/);
+  });
+
+  it("rejects names with spaces", () => {
+    assert.throws(() => validateName("foo bar", "test"), /invalid characters/);
+  });
+
+  it("rejects names with newlines", () => {
+    assert.throws(() => validateName("foo\nbar", "test"), /invalid characters/);
+  });
+
+  it("rejects names with curly braces", () => {
+    assert.throws(() => validateName("foo{bar}", "test"), /invalid characters/);
+  });
+
+  it("rejects empty string", () => {
+    assert.throws(() => validateName("", "test"), /invalid characters/);
   });
 });

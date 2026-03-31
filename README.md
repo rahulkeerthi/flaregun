@@ -80,6 +80,16 @@ enabled = true
 
 Flaregun checks for this automatically and offers to add it if missing.
 
+## Security
+
+**Use scoped API tokens, not Global API Keys.** A scoped token with `Account Analytics:Read` and `Workers Scripts:Read` is all flaregun needs. Global API Keys (`CLOUDFLARE_API_KEY`) grant full account access and should be a last resort.
+
+**Don't commit `.env` files.** If you use flaregun in CI, pass credentials via environment variables rather than `.env` files in the repo.
+
+**Output may contain sensitive data.** The `logs` mode prints request URLs, exception messages, and console output from your workers. These can contain query parameters, session tokens, or PII. Don't pipe output to shared logs or issue trackers without review.
+
+**Input validation.** Project and script names are validated against a strict allowlist (`[a-zA-Z0-9_\-\.]`) to prevent injection into API queries. `--limit` is capped at 1000.
+
 ## How it works
 
 - **list** and **scan** use the Cloudflare GraphQL Analytics API (`workersInvocationsAdaptive`) -- works on all plans, no setup needed

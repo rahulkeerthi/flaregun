@@ -1,0 +1,40 @@
+{
+  "name": "flaregun",
+  "version": "0.1.0",
+  "description": "Fire a flare to find what's wrong with your Cloudflare Workers and Pages",
+  "type": "module",
+  "bin": {
+    "flaregun": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rahulkeerthi/flaregun"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "pages",
+    "observability",
+    "logs",
+    "cli"
+  ],
+  "author": "rahulkeerthi",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "tsup": "^8.3.6",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
